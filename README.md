@@ -196,10 +196,62 @@ git branch -d <branch to be delete>
 git branch -D <branch to be delete>
 ```
 
-    Delete a Branch
-    Merge Two Branches
-    Show Commit Log as Graph For Current or All Branches
-    Abort a Conflicting Merge
-    Push a New Branch To Remote Repository
-    Remove a Remote Branch
-    Use Rebase
+# 4. Merge two branches 
+There are lots of stratagies of merging branches depending on how many branches you are trying to merge and how the branches looks like and so on. Among them, I want to focus on two of the most frequently used stratagies when you merge two branches: fast-forward and recursive.
+
+## Fast-forward merge
+Let's say you are trying to merge a feature branch (B) to the main branch (A). You've worked on the branch B so it has some commits but there is no other commits in main branch side after the feature branch branched out, that is, the feature branch are **independent and linear** to the changes in the master branch. It is the requirement to use fast-forward merge. How you do fast-forward merge is simply to move the pointer to the new commit in the branch being merged. When you merge two branches in git with "merge" commend, it automatically detects whether you can do fast-forward merge on these branches. In case you want to make a history of merge so that you can manage it afterwords in a way that there were separate branches, you would use "--no-ff" option. It will create a special commit called "merge commit" or "merge point" where you can revert merge easily.
+![](/images/fast_forward_merge.png)
+
+```bash
+(in main branch) git merge <feature branch>
+(in main branch) git merge --no-ff <feature branch>
+```
+
+---
+**Revert from a merge point**
+
+If you made a merge commit by using "--no-ff" option, you can revert the changes from merged branch by using "revert" commend with additional option "-m". The number after "-m" means the two parents (branches) of the merge point when you revert changes. The first parent is the branch that was merged into, and the second parent is the branch that was merged in. Since we want to revert the changes from feature branch in usual case, you would set this to 1. Note that, regardless of which merge stratagy you use, this method is applicable.
+```bash
+git revert -m 1 <commit number of merge point>
+```
+---
+
+## Recursive merge
+As your project becomes more complicate, you would experience actual branching, that is, the main branch grows with simultanously your feature branch growing. That means two branches are not independent and can result in conflicts on your files. Recursive merge stratagy, as the name implies, use recursive methods to solve these conflicts. I am going to explain one of the algorithms, three-way merge, which implement this strategy and are used in git as default.
+
+- two way merge
+Let's say you want to merge two branches (Y, M) and there are three lines of conflicts in a file. Since git doesn't know what changes should be live or discarded, git would ask you to resolve these conflicts manually. However, it can be burdensome if there are lots of conflicts.
+![](/images/two_way_merge.png)
+
+- three way merge
+Three-way merge set a base point which is usually the closest common ancester of the two branches and priority in all conflicts first determined based on this base. For example, in line 30, there is no change between base and branch M but between base and branch Y. In this case, git take the change of branch Y. On the other hand, if the changes of both of branches are different from those of base, git ask you to resolve the conflicts.
+![](/images/three_way_merge.png)
+
+---
+**Abort merge**
+In case you are doing three-way merge, you would be in merge process when you have to resolve conflicts. If you want to abort the merge process and want to go back before you started the merge process, you would use "merge" commend with "--abort" option or use just "reset" commend.
+```bash
+git merge --abort
+git reset
+```
+Note that this is not the same as reverting merge which you would do after merge process finished.
+
+---
+
+
+# Collaborating With Others
+To collaborate with others, your local git repository needs to be synced with the remote one. There are two major coomends to do that: push and pull.
+
+```bash
+git push <remote> <branch>
+git pull <remote> <branch>
+```
+
+TODO (multiple remote repositories, if the name of a local branch is different from that of the remote branch)
+
+
+# Advanced Repository Management
+
+## Rebase
+TODO (merge, squash, and so on)
