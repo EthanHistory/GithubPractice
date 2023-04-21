@@ -1,0 +1,21 @@
+name: test_workflow
+
+# The name for workflow runs generated from the workflow. Note that you can also use github context in the workflow yaml. For example, run-name includes the username of the actor that triggered the workflow run.
+run-name: ${{ github.actor }}'s run
+# Specifies the trigger for this workflow. This example use `push` event, so a workflow run is triggered by the event every time.
+on: [push]
+ 
+# Groups together all the jobs that run in the workflow.
+jobs:
+    # As a child key of `jobs:`, you can define each job with name. You would define properties of job in the child keys of it.
+    <job name>:
+        # Configures the job to run on specific runner. In this case, the latest version of an Ubuntu Linux runner is used.
+        runs-on: ubuntu-latest
+        # Groups together all the steps that run in the job.
+        steps:
+
+        # The uses keyword specifies that this step will run v3 of the actions/checkout action. This is an action that checks out your repository onto the runner, allowing you to run scripts or other actions against your code (such as build and test tools).
+        - uses: actions/checkout@v3
+
+        # The run keyword tells the job to execute a command on the runner
+        - run: python -m unittest ./github_action_test/tests/string_methods.py -v
